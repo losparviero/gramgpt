@@ -124,12 +124,14 @@ bot.command("help", async (ctx) => {
     .catch((e) => console.log(e));
 });
 
+// Messages
+
 bot.on("message", async (ctx) => {
   const statusMessage = await ctx.reply(`*Processing*`);
   let response;
 
   try {
-    async function requestApi(ctx) {
+    async function consultGPT(ctx) {
       try {
         const resultPromise = await chatGptClient.sendMessage(ctx.message.text);
 
@@ -157,9 +159,10 @@ bot.on("message", async (ctx) => {
       }
     }
 
-    await requestApi(ctx);
-
+    await consultGPT(ctx);
     await statusMessage.delete();
+
+    // Error
   } catch (error) {
     if (error instanceof GrammyError) {
       if (error.message.includes("Forbidden: bot was blocked by the user")) {
