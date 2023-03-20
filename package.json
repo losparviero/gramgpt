@@ -1,0 +1,29 @@
+{
+  "name": "telegpt",
+  "version": "1.0.0",
+  "description": "Now use ChatGPT in Telegram!",
+  "main": "bot.js",
+  "author": {
+    "name": "Zubin",
+    "email": "me@zubin.org.in",
+    "url": "https://zubin.org.in"
+  },
+  "scripts": {
+    "main": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/losparviero/telegpt.git"
+  },
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@grammyjs/hydrate": "^1.3.1",
+    "@grammyjs/parse-mode": "^1.6.0",
+    "@grammyjs/runner": "^2.0.2",
+    "dotenv": "^16.0.3",
+    "grammy": "^1.15.3",
+    "openai": "^3.2.1"
+  },
+  "type": "module"
+}
