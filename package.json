@@ -9,7 +9,7 @@
     "url": "https://zubin.org.in"
   },
   "scripts": {
-    "main": "node bot.js",
+    "start": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
