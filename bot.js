@@ -17,7 +17,7 @@ import { Bot, session, GrammyError } from "grammy";
 import { hydrateReply, parseMode } from "@grammyjs/parse-mode";
 import { run, sequentialize } from "@grammyjs/runner";
 import { hydrate } from "@grammyjs/hydrate";
-import { Configuration, OpenAIApi } from "openai";
+import { ChatGPTClient } from "@waylaidwanderer/chatgpt-api";
 
 // Bot
 
@@ -25,10 +25,13 @@ const bot = new Bot(process.env.BOT_TOKEN);
 
 // Auth
 
-const configuration = new Configuration({
-  apiKey: process.env.API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+const clientOptions = {
+  modelOptions: {
+    model: "gpt-3.5-turbo",
+  },
+};
+
+const chatGptClient = new ChatGPTClient(process.env.API_KEY, clientOptions);
 
 // Concurrency
 
@@ -123,14 +126,12 @@ bot.command("help", async (ctx) => {
 
 bot.on("message", async (ctx) => {
   const statusMessage = await ctx.reply(`*Processing*`);
+  let response;
 
   try {
     async function requestApi(ctx) {
       try {
-        const resultPromise = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: ctx.message.text }],
-        });
+        const resultPromise = await chatGptClient.sendMessage(ctx.message.text);
 
         const result = await Promise.race([
           resultPromise,
@@ -140,8 +141,9 @@ bot.on("message", async (ctx) => {
             }, 60000);
           }),
         ]);
-        console.log(result.data.usage);
-        await ctx.reply(`${result.data.choices[0].message.content}`, {
+
+        console.log(result.details.usage);
+        await ctx.reply(result.response, {
           reply_to_message_id: ctx.message.message_id,
         });
       } catch (error) {
