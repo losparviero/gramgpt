@@ -142,7 +142,7 @@ bot.on("message", async (ctx) => {
           }),
         ]);
 
-        console.log(result.details.usage);
+        console.log(result);
         await ctx.reply(result.response, {
           reply_to_message_id: ctx.message.message_id,
         });
