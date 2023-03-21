@@ -106,8 +106,10 @@ async function log(ctx, next) {
 // Commands
 
 bot.command("start", async (ctx) => {
+  const res = await chatGptClient.sendMessage("Hi, who are you?");
+
   await ctx
-    .reply("*Welcome!* ✨\n_Send any query or ask questions._", {
+    .reply(res.response, {
       parse_mode: "Markdown",
     })
     .then(console.log("New user added:\n", ctx.from))
