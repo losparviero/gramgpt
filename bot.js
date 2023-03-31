@@ -162,6 +162,9 @@ bot.command("tom", async (ctx) => {
 // Messages
 
 bot.on("message", async (ctx) => {
+  if (ctx.message.text === undefined) {
+    return;
+  }
   const statusMessage = await ctx.reply(`*Processing*`);
   let response;
 
