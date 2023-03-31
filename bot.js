@@ -161,7 +161,7 @@ bot.command("tom", async (ctx) => {
 
 // Group
 
-bot.on("chat_member_updated", async (ctx) => {
+bot.on("chat_member", async (ctx) => {
   if (ctx.chat.type === "group" || ctx.chat.type === "supergroup") {
     if (ctx.update.chat_member.new_chat_member !== undefined) {
       const member = ctx.update.chat_member.new_chat_member;
