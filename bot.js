@@ -113,14 +113,14 @@ async function log(ctx, next) {
 // Commands
 
 bot.command("start", async (ctx) => {
-  const res = await chatGptClient.sendMessage("Hi, who are you?");
-
   await ctx
-    .reply(res.response, {
-      parse_mode: "Markdown",
-    })
-    .then(console.log("New user added:\n", ctx.from))
-    .catch((e) => console.log(e));
+    .reply(
+      "*Welcome!* ✨\n_Send any query or ask questions._\n\n*Modes\n\n*To use in group*\n_Reply to a message from the bot with your query._\n*Mongo Tom mode*\n_Reply as Mongo Tom. Mongo Tom is a badass character._\n_To use: add to group and reply to a message with /tom._",
+      {
+        parse_mode: "Markdown",
+      }
+    )
+    .then(console.log("New user added:\n", ctx.from));
 });
 
 bot.command("help", async (ctx) => {
