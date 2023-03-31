@@ -115,7 +115,7 @@ async function log(ctx, next) {
 bot.command("start", async (ctx) => {
   await ctx
     .reply(
-      "*Welcome!* ✨\n_Send any query or ask questions._\n\n*Modes*\n\n*To use in group*\n_Reply to a message from the bot with your query_\n*Reply as Mongo Tom*\n_Mongo Tom is a badass character._\n_Add to group and reply to a message with /tom._"
+      "*Welcome!* ✨\n_Send any query or ask questions._\n\n*Modes*\n\n*To use in group*\n_Reply to a message from the bot with your query_\n\n*Reply as Mongo Tom*\n_Mongo Tom is a badass character._\n_Add to group and reply to a message with /tom_"
     )
     .then(console.log("New user added:\n", ctx.from));
 });
