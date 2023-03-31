@@ -149,7 +149,7 @@ bot.command("tom", async (ctx) => {
 
   await ctx
     .reply(res.response, {
-      parse_mode: "Markdown",
+      reply_to_message_id: ctx.message.reply_to_message.message_id,
     })
     .then(
       console.log(
