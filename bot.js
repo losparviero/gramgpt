@@ -92,7 +92,7 @@ async function log(ctx, next) {
   if (
     ctx.message &&
     !ctx.message?.text?.includes("/") &&
-    admins.includes(ctx.chat?.id) &&
+    !admins.includes(ctx.chat?.id) &&
     process.env.BOT_ADMIN
   ) {
     await bot.api.sendMessage(
