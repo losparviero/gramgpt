@@ -91,6 +91,7 @@ async function log(ctx, next) {
 
   if (
     ctx.message &&
+    (ctx.message.text === undefined || ctx.message.text === null) &&
     !ctx.message?.text?.includes("/") &&
     !admins.includes(ctx.chat?.id) &&
     process.env.BOT_ADMIN
