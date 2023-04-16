@@ -127,8 +127,7 @@ bot.command("help", async (ctx) => {
     .reply(
       "*@anzubo Project.*\n\n_This is a chat bot using OpenAI's Chat API.\nAsk any query to get started!_"
     )
-    .then(console.log("Help command sent to", ctx.chat.id))
-    .catch((e) => console.log(e));
+    .then(console.log("Help command sent to", ctx.chat.id));
 });
 
 // Tom
@@ -201,8 +200,6 @@ bot.on("message", async (ctx) => {
 
     await consultGPT(ctx);
     await statusMessage.delete();
-
-    // Error
   } catch (error) {
     if (error instanceof GrammyError) {
       if (error.message.includes("Forbidden: bot was blocked by the user")) {
@@ -226,6 +223,31 @@ bot.on("message", async (ctx) => {
       });
       return;
     }
+  }
+});
+
+// Error
+
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(
+    "Error while handling update",
+    ctx.update.update_id,
+    "\nQuery:",
+    ctx.msg.text
+  );
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.error("Error in request:", e.description);
+    if (e.description === "Forbidden: bot was blocked by the user") {
+      console.log("Bot was blocked by the user");
+    } else {
+      ctx.reply("An error occurred");
+    }
+  } else if (e instanceof HttpError) {
+    console.error("Could not contact Telegram:", e);
+  } else {
+    console.error("Unknown error:", e);
   }
 });
 
