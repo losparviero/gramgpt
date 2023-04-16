@@ -119,7 +119,8 @@ bot.command("start", async (ctx) => {
     .reply(
       "*Welcome!* ✨\n_Send any query or ask questions._\n\n*Modes*\n\n*To use in group*\n_Reply to a message from the bot with your query_\n\n*Reply as Mongo Tom*\n_Mongo Tom is a badass character._\n_Add to group and reply to a message with /tom_"
     )
-    .then(console.log("New user added:\n", ctx.from));
+    .then(console.log("New user added:\n", ctx.from))
+    .catch((e) => console.log(e));
 });
 
 bot.command("help", async (ctx) => {
@@ -127,7 +128,8 @@ bot.command("help", async (ctx) => {
     .reply(
       "*@anzubo Project.*\n\n_This is a chat bot using OpenAI's Chat API.\nAsk any query to get started!_"
     )
-    .then(console.log("Help command sent to", ctx.chat.id));
+    .then(console.log("Help command sent to", ctx.chat.id))
+    .catch((e) => console.log(e));
 });
 
 // Tom
@@ -223,31 +225,6 @@ bot.on("message", async (ctx) => {
       });
       return;
     }
-  }
-});
-
-// Error
-
-bot.catch((err) => {
-  const ctx = err.ctx;
-  console.error(
-    "Error while handling update",
-    ctx.update.update_id,
-    "\nQuery:",
-    ctx.msg.text
-  );
-  const e = err.error;
-  if (e instanceof GrammyError) {
-    console.error("Error in request:", e.description);
-    if (e.description === "Forbidden: bot was blocked by the user") {
-      console.log("Bot was blocked by the user");
-    } else {
-      ctx.reply("An error occurred");
-    }
-  } else if (e instanceof HttpError) {
-    console.error("Could not contact Telegram:", e);
-  } else {
-    console.error("Unknown error:", e);
   }
 });
 
