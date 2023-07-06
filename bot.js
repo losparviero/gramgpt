@@ -27,7 +27,7 @@ const bot = new Bot(process.env.BOT_TOKEN);
 
 const clientOptions = {
   modelOptions: {
-    model: "gpt-3.5-turbo",
+    model: "gpt-4",
   },
 };
 
@@ -80,35 +80,9 @@ async function log(ctx, next) {
   const from = ctx.from || ctx.chat;
   const name =
     `${from.first_name || ""} ${from.last_name || ""}`.trim() || ctx.chat.title;
-
-  // Console
-
   console.log(
     `From: ${name} (@${from.username}) ID: ${from.id}\nMessage: ${message}`
   );
-
-  // Channel
-
-  if (
-    ctx.message &&
-    (ctx.message.text === undefined || ctx.message.text === null) &&
-    !ctx.message?.text?.includes("/") &&
-    !admins.includes(ctx.chat?.id) &&
-    process.env.BOT_ADMIN
-  ) {
-    await bot.api.sendMessage(
-      process.env.BOT_ADMIN,
-      `<b>From: ${name} (@${from.username}) ID: <code>${from.id}</code></b>`,
-      { parse_mode: "HTML" }
-    );
-
-    await ctx.api.forwardMessage(
-      process.env.BOT_ADMIN,
-      ctx.chat.id,
-      ctx.message.message_id
-    );
-  }
-
   await next();
 }
 
