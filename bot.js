@@ -158,13 +158,15 @@ bot.on("message:text", async (ctx) => {
   try {
     async function consultGPT(ctx) {
       try {
-        const resultPromise = (response = await chatGptClient.sendMessage(
+        const resultPromise = await chatGptClient.sendMessage(
           ctx.message.text,
           {
-            conversationId: response.conversationId,
-            parentMessageId: response.messageId,
+            conversationId: response.conversationId
+              ? response.conversationId
+              : null,
+            parentMessageId: response.messageId ? response.messageId : null,
           }
-        ));
+        );
 
         const result = await Promise.race([
           resultPromise,
