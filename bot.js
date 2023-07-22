@@ -61,6 +61,19 @@ async function admin(ctx, next) {
     botAdmins: admins,
     isAdmin: admins.includes(ctx.chat?.id),
   };
+
+  if (
+    ctx.message.text &&
+    !ctx.message.text.includes("/") &&
+    !ctx.config.isAdmin
+  ) {
+    ctx.reply("*You are not authorized to use this bot.*", {
+      reply_to_message_id: ctx.message.message_id,
+      parse_mode: "Markdown",
+    });
+    console.log("Unauthorized use detected by:\n", ctx.from);
+    return;
+  }
   await next();
 }
 
