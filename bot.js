@@ -147,11 +147,8 @@ bot.command("tom", async (ctx) => {
 
 // Messages
 
-bot.on("message", async (ctx) => {
-  if (ctx.message.text === undefined) {
-    return;
-  }
-  if (ctx.chat.type != "private" && !ctx.message.text.startsWith("/")) {
+bot.on("message:text", async (ctx) => {
+  if (ctx.chat.type != "private") {
     return;
   }
 
@@ -161,7 +158,13 @@ bot.on("message", async (ctx) => {
   try {
     async function consultGPT(ctx) {
       try {
-        const resultPromise = await chatGptClient.sendMessage(ctx.message.text);
+        const resultPromise = (response = await chatGptClient.sendMessage(
+          ctx.message.text,
+          {
+            conversationId: response.conversationId,
+            parentMessageId: response.messageId,
+          }
+        ));
 
         const result = await Promise.race([
           resultPromise,
