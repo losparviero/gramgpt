@@ -13,7 +13,7 @@
 
 import dotenv from "dotenv";
 dotenv.config();
-import { Bot, session, GrammyError } from "grammy";
+import { Bot, session, GrammyError, HttpError } from "grammy";
 import { hydrateReply, parseMode } from "@grammyjs/parse-mode";
 import { run, sequentialize } from "@grammyjs/runner";
 import { hydrate } from "@grammyjs/hydrate";
@@ -106,8 +106,7 @@ bot.command("start", async (ctx) => {
     .reply(
       "*Welcome!* ✨\n_Send any query or ask questions._\n\n*Modes*\n\n*To use in group*\n_Reply to a message from the bot with your query_\n\n*Reply as Mongo Tom*\n_Mongo Tom is a badass character._\n_Add to group and reply to a message with /tom_"
     )
-    .then(console.log("New user added:\n", ctx.from))
-    .catch((e) => console.log(e));
+    .then(console.log("New user added:\n", ctx.from));
 });
 
 bot.command("help", async (ctx) => {
@@ -115,8 +114,7 @@ bot.command("help", async (ctx) => {
     .reply(
       "*@anzubo Project.*\n\n_This is a chat bot using OpenAI's Chat API.\nAsk any query to get started!_"
     )
-    .then(console.log("Help command sent to", ctx.chat.id))
-    .catch((e) => console.log(e));
+    .then(console.log("Help command sent to", ctx.chat.id));
 });
 
 // Tom
@@ -141,8 +139,7 @@ bot.command("tom", async (ctx) => {
       console.log(
         `Tom mode invoked by ${ctx.chat.id}\nMessage: ${ctx.message.reply_to_message.text}`
       )
-    )
-    .catch((e) => console.log(e));
+    );
 });
 
 // Messages
@@ -155,71 +152,48 @@ bot.on("message:text", async (ctx) => {
   const statusMessage = await ctx.reply(`*Processing*`);
   let response;
 
-  try {
-    async function consultGPT(ctx) {
-      try {
-        const resultPromise = await chatGptClient.sendMessage(
-          ctx.message.text,
-          {
-            conversationId: response.conversationId
-              ? response.conversationId
-              : null,
-            parentMessageId: response.messageId ? response.messageId : null,
-          }
-        );
+  if (response.conversationId) {
+    response = await chatGptClient.sendMessage(ctx.message.text, {
+      conversationId: response.conversationId,
+      parentMessageId: response.messageId,
+    });
+  } else {
+    response = await chatGptClient.sendMessage(ctx.message.text);
+  }
 
-        const result = await Promise.race([
-          resultPromise,
-          new Promise((_, reject) => {
-            setTimeout(() => {
-              reject("Function timeout");
-            }, 60000);
-          }),
-        ]);
+  await ctx.reply(response.response, {
+    reply_to_message_id: ctx.message.message_id,
+  });
 
-        console.log(result);
-        await ctx.reply(result.response, {
-          reply_to_message_id: ctx.message.message_id,
-        });
-      } catch (error) {
-        if (error === "Function timeout") {
-          await ctx.reply("*Query timed out.*", {
-            reply_to_message_id: ctx.message.message_id,
-          });
-        } else {
-          throw error;
-        }
-      }
-    }
+  await statusMessage.delete();
+});
 
-    await consultGPT(ctx);
-    await statusMessage.delete();
-  } catch (error) {
-    if (error instanceof GrammyError) {
-      if (error.message.includes("Forbidden: bot was blocked by the user")) {
-        console.log("Bot was blocked by the user");
-      } else if (error.message.includes("Call to 'sendMessage' failed!")) {
-        console.log("Error sending message: ", error);
-        await ctx.reply(`*Error contacting Telegram.*`, {
-          reply_to_message_id: ctx.message.message_id,
-        });
-      } else {
-        await ctx.reply(`*An error occurred: ${error.message}*`, {
-          reply_to_message_id: ctx.message.message_id,
-        });
-      }
-      console.log(`Error sending message: ${error.message}`);
-      return;
+// Error
+
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(
+    "Error while handling update",
+    ctx.update.update_id,
+    "\nQuery:",
+    ctx.msg.text
+  );
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.error("Error in request:", e.description);
+    if (e.description === "Forbidden: bot was blocked by the user") {
+      console.log("Bot was blocked by the user");
     } else {
-      console.log(`An error occurred:`, error);
-      await ctx.reply(`*An error occurred.*\n_Error: ${error.message}_`, {
-        reply_to_message_id: ctx.message.message_id,
-      });
-      return;
+      ctx.reply("An error occurred");
     }
+  } else if (e instanceof HttpError) {
+    console.error("Could not contact Telegram:", e);
+  } else {
+    console.error("Unknown error:", e);
   }
 });
 
 // Run
 
+console.log("Bot is running.");
 run(bot);
