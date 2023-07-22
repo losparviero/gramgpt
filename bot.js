@@ -151,10 +151,11 @@ bot.on("message:text", async (ctx) => {
 
   const statusMessage = await ctx.reply(`*Processing*`);
   let response;
+  let conversationId = response.conversationId;
 
-  if (response.conversationId) {
+  if (conversationId) {
     response = await chatGptClient.sendMessage(ctx.message.text, {
-      conversationId: response.conversationId,
+      conversationId,
       parentMessageId: response.messageId,
     });
   } else {
