@@ -63,6 +63,7 @@ async function admin(ctx, next) {
   };
 
   if (
+    process.env.ADMIN_ONLY == true &&
     ctx.message.text &&
     !ctx.message.text.includes("/") &&
     !ctx.config.isAdmin
